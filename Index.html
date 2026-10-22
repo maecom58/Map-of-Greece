@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>그리스 신화 지도</title>
+<style>
+:root{--bg:#f4eddc;--fg:#2b2620;--mut:#7a6f60;--sea:#bcd6dc;--land:#e6d6ae;--line:#9c8a60;--card:#fffaf0;--bd:#d6c79f;--real:#1f7a6d;--semi:#c98a1b;--myth:#7a4fb5;--route:#b3382c;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#17161a;--fg:#ece6d8;--mut:#a39a89;--sea:#1b2b34;--land:#3a3427;--line:#7a6c4c;--card:#222025;--bd:#3a3640;--real:#4fc0ae;--semi:#e5a93c;--myth:#a98be0;--route:#ef7a6c}}
+:root[data-theme="dark"]{--bg:#17161a;--fg:#ece6d8;--mut:#a39a89;--sea:#1b2b34;--land:#3a3427;--line:#7a6c4c;--card:#222025;--bd:#3a3640;--real:#4fc0ae;--semi:#e5a93c;--myth:#a98be0;--route:#ef7a6c}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:-apple-system,"Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif;line-height:1.55}
+.wrap{max-width:900px;margin:0 auto;padding:14px}
+h1{font-size:1.25rem;margin:4px 0 2px}
+.sub{color:var(--mut);font-size:.85rem;margin:0 0 10px}
+.map{position:relative;border:1px solid var(--bd);border-radius:12px;overflow:hidden;background:var(--sea)}
+svg{display:block;width:100%;height:auto;aspect-ratio:816/374;touch-action:manipulation}
+.land{fill:var(--land);stroke:var(--line);stroke-width:1.2;vector-effect:non-scaling-stroke;stroke-linejoin:round}
+.sea{fill:var(--sea);stroke:var(--line);stroke-width:1.4;vector-effect:non-scaling-stroke;stroke-linejoin:round}
+.mk{cursor:pointer}
+.lbl{font-size:11px;fill:var(--fg);paint-order:stroke;stroke:var(--land);stroke-width:3px;text-anchor:middle;pointer-events:none}
+.rg{font-size:14px;fill:var(--mut);opacity:.55;text-anchor:middle;letter-spacing:3px;pointer-events:none}
+.rg.s{font-style:italic;font-size:15px;letter-spacing:5px}
+.rt{fill:none;stroke:var(--route);stroke-width:2;stroke-dasharray:6 4;vector-effect:non-scaling-stroke;pointer-events:none}
+.bar{position:absolute;right:8px;top:8px;display:flex;gap:6px}
+.bar button,.tg{border:1px solid var(--bd);background:var(--card);color:var(--fg);border-radius:8px;padding:6px 10px;font-size:.8rem}
+#reset{display:none}
+.tg.on{border-color:var(--route);color:var(--route)}
+.legend{display:flex;flex-wrap:wrap;gap:4px 10px;margin:10px 0;font-size:.78rem;color:var(--mut)}
+.legend span{display:flex;align-items:center;gap:4px}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+details{margin:6px 0}
+summary{font-size:.9rem;padding:6px 0}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--bd);background:var(--card);color:var(--fg);border-radius:999px;padding:5px 10px;font-size:.82rem;display:flex;align-items:center;gap:6px}
+.chip.on{border-color:var(--fg)}
+.panel{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px;margin-top:6px}
+.panel h2{margin:0 0 4px;font-size:1.1rem}
+.tag{display:inline-block;font-size:.75rem;padding:2px 8px;border-radius:999px;color:#fff;margin-right:4px}
+.panel p{margin:8px 0 12px}
+label{font-size:.82rem;color:var(--mut)}
+textarea{width:100%;min-height:130px;margin-top:4px;padding:10px;border-radius:8px;border:1px solid var(--bd);background:var(--bg);color:var(--fg);font:inherit;resize:vertical}
+.st{font-size:.75rem;color:var(--mut);min-height:1em}
+.bk{margin-top:10px;padding:12px 14px;border:1px dashed var(--bd);border-radius:12px}
+.bk b{font-size:.9rem}.bk small{display:block;color:var(--mut);margin:2px 0 8px}
+.bk .row{display:flex;gap:6px;flex-wrap:wrap}.bk button{border:1px solid var(--bd);background:var(--card);color:var(--fg);border-radius:8px;padding:8px 12px;font-size:.85rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🏛️ 그리스 신화 지도</h1>
+  <p class="sub">장소를 누르면 확대되고, 아래에 나만의 이야기를 적을 수 있어요.</p>
+  <div class="map">
+    <svg id="svg" viewBox="0 0 816 374" xmlns="http://www.w3.org/2000/svg">
+      <rect width="816" height="374" fill="var(--land)"/>
+      <path id="sea" class="sea"/>
+      <g id="isl"></g><g id="rgs"></g>
+      <polyline id="rt" class="rt" style="display:none"/>
+      <g id="mks"></g>
+    </svg>
+    <div class="bar"><button id="rbtn" class="tg">오디세우스 항로</button><button id="reset">전체</button></div>
+  </div>
+  <div class="legend">
+    <span><i class="dot" style="background:var(--real)"></i>실재 모티브</span>
+    <span><i class="dot" style="background:var(--semi)"></i>실재 추정</span>
+    <span><i class="dot" style="background:var(--myth)"></i>순수 신화</span>
+  </div>
+  <details><summary>장소 목록 보기</summary><div class="chips" id="chips"></div></details>
+  <div class="panel">
+    <h2 id="pt">장소를 선택해 주세요</h2>
+    <div><span class="tag" id="ptag" style="display:none"></span><span class="tag" id="pr" style="display:none;background:var(--route)"></span></div>
+    <p id="pd">지도 위의 점이나 장소 목록을 눌러 보세요.</p>
+    <div id="ned" style="display:none">
+      <label for="note">내 이야기</label>
+      <textarea id="note" placeholder="이 장소와 관련된 이야기를 적어 보세요…"></textarea>
+      <div class="st" id="st"></div>
+    </div>
+  </div>
+  <div class="bk">
+    <b>메모 백업</b>
+    <small>모든 메모를 파일로 저장해 두면, 어디서든 다시 불러올 수 있어요.</small>
+    <div class="row"><button id="bexp">메모 내보내기</button><button id="bimp">메모 불러오기</button></div>
+    <input type="file" id="bfile" accept=".json,.txt,application/json,text/plain" style="display:none">
+    <div class="st" id="bmsg"></div>
+  </div>
+</div>
+<script>
+var T={r:["실재 모티브","--real"],s:["실재 추정","--semi"],m:["순수 신화","--myth"]};
+function X(l){return +((l+10)*17).toFixed(1)}function Y(a){return +((46-a)*22).toFixed(1)}
+function path(a){var s="";for(var i=0;i<a.length;i+=2)s+=(i?"L":"M")+X(a[i])+","+Y(a[i+1]);return s+"Z"}
+var SEA=[-10,46,-1.3,46,-1.4,43.4,-3.8,43.5,-8.2,43.7,-9.3,42.9,-9,42.2,-8.8,41.1,-9.5,38.7,-9,37,-7.4,37.2,-6.3,36.5,
+-5.4,36,-4.4,36.7,-2.2,36.8,-.9,37.6,.2,38.7,-.3,39.5,.9,40.7,2.2,41.4,3.3,42.3,3,43.2,5.4,43.3,6,43.1,7.3,43.7,8.9,44.4,9.8,44.1,10.3,43.5,10.5,42.9,11.8,42.1,12.3,41.7,13.05,41.2,13.6,41.2,14.2,40.8,14.35,40.6,14.8,40.6,15.3,40,15.6,40,16,39.2,15.8,38.6,15.65,38.1,16.05,37.93,16.6,38.7,17.15,39,17.2,40.4,18,40.05,18.35,39.8,18.5,40.15,17.95,40.65,16.9,41.1,16.2,41.9,14.2,42.45,13.5,43.6,12.6,44.1,12.3,45.4,13.8,45.65,14.4,45.3,15.2,44.1,16.4,43.5,18.1,42.65,18.7,42.4,19.4,41.3,19.45,40.45,20.25,39.5,20.75,38.95,21.4,38.3,21.1,37.9,21.7,36.9,22.5,36.4,23.2,36.45,22.8,37.55,23.1,37.9,24,37.65,24,38,22.95,39.35,22.6,40.1,22.95,40.6,23.7,40.3,24.3,40,24,40.5,24.4,40.9,25.9,40.85,26.7,40.4,26.17,40.05,26.2,39.95,26.05,39.5,26.9,39.4,26.85,39.1,27.1,38.4,26.3,38.3,27.3,37.9,27.4,37,28.3,36.8,29.1,36.6,29.6,36.2,30.7,36.85,32,36.5,32.8,36.05,34.6,36.8,36.2,36.6,35.8,35.5,35.5,33.9,35,32.8,34.4,31.5,32.3,31.3,29.9,31.2,27.2,31.35,24,32.1,22.6,32.8,20.05,32.1,19,30.5,16.6,31.2,15.1,32.4,13.2,32.9,10.1,33.9,10.8,34.7,11,37,10.3,36.8,9.8,37.3,7.8,36.9,3,36.8,-.65,35.7,-2.9,35.3,-5.8,35.8,-6.8,34,-8,33,-9.8,31.5,-10,29];
+var ISL=[
+[8.2,40.9,8.4,40.1,8.4,39.4,8.65,38.95,9.15,39.15,9.65,39.5,9.7,40.3,9.75,40.9,9.2,41.25,8.5,40.95],
+[8.6,42.4,9.35,43,9.5,42.8,9.4,42.1,9.4,41.4,9.1,41.4,8.65,41.8,8.55,42.2],
+[13.35,38.15,12.5,38,12.45,37.8,12.6,37.65,13.5,37.25,14.2,37.05,15.1,36.7,15.3,37.05,15.1,37.5,15.3,37.85,15.6,38.25,15.25,38.25,14,38],
+[14.2,35.97,14.55,35.85,14.5,35.8,14.3,35.85],
+[2.35,39.7,3.1,39.95,3.45,39.7,3,39.3,2.5,39.5],
+[23.55,35.2,24,35.55,24.5,35.4,25.15,35.35,25.7,35.2,26.3,35.25,25.75,35,24.75,34.99,24.2,35.2],
+[32.3,34.95,32.9,34.65,33.9,34.95,34.6,35.7,33.9,35.3,33,35.4,32.4,35.4],
+[27.7,36.4,28.2,36.45,28.2,35.9,27.75,35.95],
+[22.9,38.85,23.5,38.9,24.2,38.35,24.6,38,24.3,37.95,23.7,38.3,23.3,38.45],
+[25.85,39.3,26.55,39.35,26.55,39.1,26.2,38.95,25.85,39.1],
+[19.7,39.8,20.05,39.75,20.1,39.45,19.9,39.4,19.85,39.65],
+[20.35,38.35,20.8,38.45,20.75,38.15,20.4,38.1]];
+var RG=[["스페인",-3,40],["프랑스",3,45],["이탈리아",12,43.7],["그리스",21.6,40.5],["튀르키예",32,38.6],["이집트",29,29.8],["리비아",17,29.8],["튀니지",9.2,34.2],["알제리",2,34.3],
+["지중해",18,34.7,1],["티레니아해",12,39.5,1],["이오니아해",18.3,37.7,1],["에게해",25,38.3,1],["발레아레스 해",3,40.5,1]];
+// id,이름,유형,경도,위도,설명,항해순서
+var P=[
+["troy","트로이","r",26.24,39.96,"튀르키예 서북부 히살리크 언덕 유적이 모티브로 널리 지목돼요. 10년 전쟁의 무대이자 오디세우스 항해의 출발점입니다.",1],
+["ismarus","이스마로스(키코네스)","s",25.5,40.87,"트로이를 떠난 오디세우스가 처음 약탈한 도시예요. 트라키아 해안의 마로네이아 부근으로 봅니다.",2],
+["lotus","로토파고스","s",10.85,33.8,"연꽃 열매를 먹으면 귀향을 잊는 사람들의 땅이에요. 튀니지 제르바 섬이나 리비아 해안이 후보입니다.",3],
+["cyclops","키클롭스의 섬","s",14.95,37.6,"외눈 거인 폴리페모스의 땅이에요. 시칠리아 에트나 화산 부근으로 보는 전통이 있습니다.",4],
+["aeolia","아이올리아","s",14.95,38.5,"바람의 신 아이올로스의 떠다니는 섬이에요. 리파리·스트롬볼리 등 에올리에 제도가 후보입니다.",5],
+["laestry","라이스트뤼고네스","s",9.15,41.38,"식인 거인들의 땅 텔레필로스예요. 사르데냐와 코르시카 사이 보니파치오 해협이 후보입니다.",6],
+["aeaea","아이아이에","s",13.05,41.23,"마녀 키르케의 섬이에요. 이탈리아 치르체오 곶이 전통적 후보지만 순수 신화로 보기도 합니다.",7],
+["nekro","저승 입구(아케론)","s",20.5,39.23,"오디세우스가 혼령을 불러낸 곳이에요. 에페이로스 아케론 강가의 네크로만테이온 유적이 모티브라는 설이 있습니다.",8],
+["sirens","세이렌의 바위","s",14.5,40.57,"노래로 뱃사람을 홀리는 세이렌의 섬이에요. 소렌토 앞 리 갈리 제도가 후보입니다.",9],
+["scylla","스킬라와 카리브디스","s",15.65,38.25,"머리 여섯 달린 괴물과 배를 삼키는 소용돌이예요. 메시나 해협의 암초와 해류가 모티브로 추정됩니다.",10],
+["thrin","트리나키아","s",14.2,37.5,"태양신 헬리오스의 소 떼가 있던 섬이에요. 시칠리아로 보는 것이 일반적입니다.",11],
+["ogygia","오기기아","s",14.27,36.04,"칼립소가 오디세우스를 7년간 붙잡은 섬이에요. 몰타의 고조 섬이 전통 후보지만 위치는 불확실합니다.",12],
+["scheria","스케리아(파이아케스)","s",19.9,39.6,"배를 잘 만드는 파이아케스인의 섬이에요. 코르푸(케르키라)가 고대부터 후보로 꼽혀 왔습니다.",13],
+["ithaca","이타카","r",20.67,38.4,"오디세우스의 고향 섬이에요. 오늘날의 이타키 섬과 같은지는 학자들 사이에서 논쟁 중입니다.",14],
+["avernus","아베르누스 호수","s",14.07,40.83,"로마 신화에서 저승으로 가는 입구로 여긴 화산 호수예요. 인근 쿠마이에 무녀의 동굴이 있습니다."],
+["olympus","올림포스 산","r",22.35,40.08,"신들의 궁전이 있다는 산이에요. 실제 그리스 최고봉(2,918m)이지만 구름 위 궁전은 상상입니다."],
+["delphi","델포이","r",22.5,38.48,"아폴론 신전과 신탁으로 유명한 곳이에요. 세계의 배꼽이라 불렸고 실제 유적이 남아 있습니다."],
+["athens","아테네","r",23.73,37.97,"아테나 여신의 이름이 붙은 도시예요. 아크로폴리스의 파르테논 신전이 남아 있습니다."],
+["mycenae","미케네","r",22.76,37.73,"아가멤논 왕의 도시예요. 사자문과 왕족 무덤이 발굴된 실제 청동기 유적입니다."],
+["knossos","크노소스(미궁)","r",25.16,35.3,"미노스 왕과 미궁(라비린토스), 미노타우로스 전설의 무대예요. 궁전 유적의 복잡한 구조가 모티브로 꼽힙니다."],
+["paphos","파포스","r",32.42,34.76,"아프로디테가 바다 거품에서 태어나 닿았다는 키프로스의 해안이에요."],
+["pillars","헤라클레스의 기둥","r",-5.5,36,"지브롤터 해협 양쪽의 바위산이에요. 고대인에게는 알려진 세계의 서쪽 끝이었습니다."],
+["atlantis","아틀란티스","m",-8.5,35.2,"플라톤이 대화편에서 소개한 가라앉은 섬이에요. 대서양 쪽 어딘가로 묘사되지만 플라톤의 창작이라는 견해가 우세합니다."],
+["hesper","헤스페리데스 동산","m",-8.2,31.6,"황금 사과가 열리는 요정들의 정원이에요. 서쪽 끝 아틀라스 산 부근에 있다고 전해집니다."],
+["elysium","엘리시온","m",-9.4,34.2,"총애받은 영웅들이 사는 축복의 땅이에요. 세상 서쪽 끝 오케아노스 부근에 있다고 그려집니다."]
+];
+var svg=document.getElementById("svg"),mks=document.getElementById("mks"),chips=document.getElementById("chips");
+var NS="http://www.w3.org/2000/svg",vb=[0,0,816,374],raf,sel=null;
+function el(n,a,p){var e=document.createElementNS(NS,n);for(var k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e}
+document.getElementById("sea").setAttribute("d",path(SEA));
+ISL.forEach(function(a){el("path",{class:"land",d:path(a)},document.getElementById("isl"))});
+RG.forEach(function(r){var t=el("text",{class:"rg"+(r[3]?" s":""),x:X(r[1]),y:Y(r[2])},document.getElementById("rgs"));t.textContent=r[0]});
+var route=P.filter(function(p){return p[6]}).sort(function(a,b){return a[6]-b[6]});
+document.getElementById("rt").setAttribute("points",route.map(function(p){return X(p[3])+","+Y(p[4])}).join(" "));
+var notes={};
+try{notes=JSON.parse(localStorage.getItem("mythNotes")||"{}")||{}}catch(e){notes={}}
+P.forEach(function(p){
+  var c="var("+T[p[2]][1]+")";
+  var g=el("g",{class:"mk"},mks);p.g=g;
+  el("circle",{r:16,fill:"transparent"},g);
+  el("circle",{r:5.5,fill:c,stroke:"#fff","stroke-width":1.5},g);
+  if(p[2]=="m")el("circle",{r:9,fill:"none",stroke:c,"stroke-dasharray":"3 3","stroke-width":1.5},g);
+  if(p[2]=="s")el("circle",{r:9,fill:"none",stroke:c,"stroke-width":1.5},g);
+  var t=el("text",{class:"lbl",y:-14},g);t.textContent=(p[6]?p[6]+". ":"")+p[1];p.t=t;
+  g.addEventListener("click",function(){pick(p[0])});
+  var b=document.createElement("button");b.className="chip";b.id="c-"+p[0];
+  b.innerHTML='<i class="dot" style="background:'+c+'"></i>'+p[1];
+  b.onclick=function(){pick(p[0])};chips.appendChild(b);
+});
+function layout(){
+  var s=vb[2]/svg.clientWidth,zoomed=vb[2]<500,wide=svg.clientWidth>=700;
+  P.forEach(function(p){
+    var k=s*(sel===p[0]?1.4:1);
+    p.g.setAttribute("transform","translate("+X(p[3])+" "+Y(p[4])+") scale("+k+")");
+    var inView=X(p[3])>vb[0]-10&&X(p[3])<vb[0]+vb[2]+10&&Y(p[4])>vb[1]-10&&Y(p[4])<vb[1]+vb[3]+10;
+    p.t.style.display=((zoomed&&inView)||wide||sel===p[0])?"":"none";
+  });
+}
+function setVB(v){vb=v;svg.setAttribute("viewBox",v.join(" "));layout()}
+function go(t){
+  cancelAnimationFrame(raf);var a=vb.slice(),t0=performance.now();
+  (function f(n){var p=Math.min(1,(n-t0)/700);p=p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2;
+    setVB(a.map(function(v,i){return v+(t[i]-v)*p}));if(p<1)raf=requestAnimationFrame(f)})(t0);
+}
+function $(i){return document.getElementById(i)}
+function pick(id){
+  var p=P.filter(function(q){return q[0]===id})[0];sel=id;
+  var w=170,h=w*374/816,cx=X(p[3]),cy=Y(p[4]);
+  go([Math.max(0,Math.min(816-w,cx-w/2)),Math.max(0,Math.min(374-h,cy-h/2)),w,h]);
+  $("reset").style.display="block";
+  $("pt").textContent=p[1];
+  var tg=$("ptag");tg.style.display="inline-block";tg.textContent=T[p[2]][0];tg.style.background="var("+T[p[2]][1]+")";
+  var pr=$("pr");if(p[6]){pr.style.display="inline-block";pr.textContent="오디세우스 항해 "+p[6]+"번째"}else pr.style.display="none";
+  $("pd").textContent=p[5];
+  $("ned").style.display="block";
+  $("note").value=notes[id]||"";$("st").textContent="";
+  P.forEach(function(q){$("c-"+q[0]).classList.toggle("on",q[0]===id)});
+  $("pt").scrollIntoView({behavior:"smooth",block:"nearest"});
+}
+$("reset").onclick=function(){
+  sel=null;go([0,0,816,374]);this.style.display="none";
+  P.forEach(function(q){$("c-"+q[0]).classList.remove("on")});
+};
+$("rbtn").onclick=function(){
+  var r=$("rt"),on=r.style.display==="none";r.style.display=on?"":"none";this.classList.toggle("on",on);
+};
+var dbDoc=null,tmr;
+function saveLocal(){try{localStorage.setItem("mythNotes",JSON.stringify(notes))}catch(e){}}
+$("note").addEventListener("input",function(){
+  if(!sel)return;notes[sel]=this.value;saveLocal();
+  var st=$("st");st.textContent="저장 중…";
+  clearTimeout(tmr);
+  tmr=setTimeout(async function(){
+    if(!dbDoc){st.textContent="이 기기에 저장됨";return}
+    try{await dbDoc.set({notes:notes});st.textContent="계정에 저장됨 ☁️"}
+    catch(e){st.textContent="이 기기에만 저장됨(동기화 실패)"}
+  },700);
+});
+(async function(){
+  try{
+    if(!window.claude||!claude.use)return;
+    var u=await claude.use("user"),db=await claude.use("db");
+    if(!u||!db)return;
+    var uid=await u.id();if(!uid)return;
+    dbDoc=db.collection("data/users/"+uid).doc("mythNotes");
+    var s=await dbDoc.get();
+    if(s.exists){var d=(s.data()||{}).notes||{};for(var k in d)if(d[k])notes[k]=d[k];saveLocal();
+      if(sel)$("note").value=notes[sel]||""}
+  }catch(e){}
+})();
+function bmsg(t){$("bmsg").textContent=t}
+async function exportNotes(){
+  var n=Object.keys(notes).filter(function(k){return notes[k]}).length;
+  if(!n){bmsg("저장된 메모가 아직 없어요");return}
+  var data=JSON.stringify({app:"greek-myth-map",notes:notes},null,2),d=new Date().toISOString().slice(0,10);
+  try{
+    if(window.claude&&claude.use){
+      var dl=await claude.use("downloads");
+      if(dl){
+        try{await dl.save({filename:"myth-notes-"+d+".json",data:data})}
+        catch(e){if(e&&e.code==="declined"){bmsg("저장을 취소했어요");return}await dl.save({filename:"myth-notes-"+d+".txt",data:data})}
+        bmsg(n+"개 장소의 메모를 파일로 저장했어요");return;
+      }
+    }
+  }catch(e){}
+  try{
+    var a=document.createElement("a");a.href=URL.createObjectURL(new Blob([data],{type:"application/json"}));
+    a.download="myth-notes-"+d+".json";document.body.appendChild(a);a.click();a.remove();
+    bmsg(n+"개 장소의 메모를 파일로 저장했어요");
+  }catch(e){bmsg("이 환경에서는 파일 저장이 막혀 있어요")}
+}
+$("bexp").onclick=exportNotes;
+$("bimp").onclick=function(){$("bfile").click()};
+$("bfile").onchange=function(){
+  var f=this.files[0];this.value="";if(!f)return;
+  var r=new FileReader();
+  r.onload=async function(){
+    try{
+      var o=JSON.parse(r.result),m=o&&o.notes;
+      if(!m||typeof m!=="object")throw 0;
+      var c=0;for(var k in m){if(typeof m[k]==="string"&&m[k]){notes[k]=m[k];c++}}
+      saveLocal();if(sel)$("note").value=notes[sel]||"";
+      if(dbDoc){try{await dbDoc.set({notes:notes})}catch(e){}}
+      bmsg(c+"개 장소의 메모를 불러왔어요");
+    }catch(e){bmsg("올바른 백업 파일이 아니에요")}
+  };
+  r.onerror=function(){bmsg("파일을 읽지 못했어요")};
+  r.readAsText(f);
+};
+window.addEventListener("resize",layout);
+layout();
+</script>
+</body>
+</html>
